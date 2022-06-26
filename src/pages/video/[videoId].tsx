@@ -57,7 +57,7 @@ const VideoIdLoad: NextPage = () => {
           setError(null);
           const words = matchPhrasesToTimestamps(fetchedPhrases, transcript);
           if (!words) {
-            setError("Could not find any phrases");
+            setError("Could not find any phrases.");
           } else {
             setWords(words);
             setError(null);
@@ -66,9 +66,8 @@ const VideoIdLoad: NextPage = () => {
             setSpans(spans);
           }
         } catch (e) {
-          setError(
-            "Error occured. Please try again, or with a different video."
-          );
+          setError("Please ensure the youtube video has a transcript.");
+          setText(null);
           throw e;
         }
       })();
