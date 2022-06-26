@@ -1,5 +1,13 @@
 import type { NextPage } from "next";
-import { Box, Button, Divider, Heading, Input, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Divider,
+  Heading,
+  Input,
+  Link,
+  Text,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { getId, getTranscript } from "../lib/api";
 import { ArrowRight } from "react-feather";
@@ -17,6 +25,16 @@ const Home: NextPage = () => {
       <Header />
       <Text mt="-5px" mb="5" fontSize="lg" fontWeight="bold">
         Block youtube sponsors using state-of-the-art natural language models!
+        {"  "}
+        <Link
+          fontWeight={"normal"}
+          href="https://github.com/MonliH/reBlock"
+          ml="1px"
+          textDecor={"underline"}
+          color={"blue.400"}
+        >
+          See Code on Github
+        </Link>
       </Text>
       <Divider />
       <Box mb="3" mt="12">

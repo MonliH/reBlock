@@ -1648,6 +1648,11 @@ focus-lock@^0.11.2:
   dependencies:
     tslib "^2.0.3"
 
+focus-visible@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/focus-visible/-/focus-visible-5.2.0.tgz#3a9e41fccf587bd25dcc2ef045508284f0a4d6b3"
+  integrity sha512-Rwix9pBtC1Nuy5wysTmKy+UjbDJpIfg8eHjw0rjZ1mX4GNLz1Bmd16uDpI3Gk1i70Fgcs8Csg2lPm8HULFg9DQ==
+
 framer-motion@^6:
   version "6.3.15"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-6.3.15.tgz#4f56fc6cab3709ba889a6536c4d32bec9d74f3a9"
