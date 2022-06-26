@@ -26,6 +26,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/router";
 import YouTube from "react-youtube";
 import Transcript from "components/Transcript";
+import Header from "components/Header";
 
 const VideoIdLoad: NextPage = () => {
   const router = useRouter();
@@ -80,12 +81,11 @@ const VideoIdLoad: NextPage = () => {
   };
 
   return (
-    <Box p="24">
-      <Heading fontSize="7xl" mb="12">
-        reBlock
-      </Heading>
+    <Box p="24" pt="14">
+      <Header />
       {router.isReady && (
         <YouTube
+          className="videoClass"
           videoId={videoId}
           onReady={(e) => {
             videoRef.current = e.target;
@@ -127,7 +127,13 @@ const VideoIdLoad: NextPage = () => {
         overflowX="hidden"
         mb="5"
       >
-        {words && <Transcript time={playProgress} words={words} />}
+        {words && (
+          <Transcript
+            time={playProgress}
+            words={words}
+            pressed={(time) => videoRef.current.seekTo(time)}
+          />
+        )}
       </Box>
       <NextLink href="/" passHref>
         <Button as="a" leftIcon={<ArrowLeft />}>

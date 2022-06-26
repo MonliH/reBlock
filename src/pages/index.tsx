@@ -5,17 +5,15 @@ import { getId, getTranscript } from "../lib/api";
 import { ArrowRight } from "react-feather";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
+import Header from "components/Header";
 
 const Home: NextPage = () => {
   const [id, setId] = useState<string | null>(null);
   const [empty, setEmpty] = useState<boolean>(true);
-  const router = useRouter();
 
   return (
     <Box p="24" pt="14">
-      <Heading fontSize="7xl" mb="12">
-        reBlock
-      </Heading>
+      <Header />
       <Box mb="3">
         <Text>Enter Youtube URL:</Text>
         <Input

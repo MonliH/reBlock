@@ -2,7 +2,7 @@ const url =
   process.env.NODE_ENV == "development" ? "http://localhost:8000" : "something";
 
 export function formatTime(seconds: number): string {
-  let res = hms(seconds);
+  let res = hms(seconds) as number[];
   res = res[0] != 0 ? res : res.slice(1);
   return res.map((v) => ("0" + v).slice(-2)).join(":");
 }

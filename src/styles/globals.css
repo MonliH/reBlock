@@ -10,3 +10,16 @@ body,
 * {
   box-sizing: border-box;
 }
+
+.videoClass {
+  width: min(100%, calc(65vh * 16/9));
+  height: auto;
+  aspect-ratio: 16/9;
+}
+
+.videoClass iframe {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
