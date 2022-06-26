@@ -45,7 +45,10 @@ async def detect(request: Request):
     #     if (current_length + len(word)) > max_size:
     #         batch = " ".join(
     #             tokenizer.batch_decode(
-    #                 [tok[1:-1] for tok in tokens[i - current_word_length : i]]
+    #                 [
+    #                     tok[1:-1]
+    #                     for tok in tokens[max(0, i - current_word_length - 1) : i]
+    #                 ]
     #             )
     #         )
     #         batches.append(batch)
@@ -54,6 +57,14 @@ async def detect(request: Request):
     #         continue
     #     current_length += len(word)
     #     current_word_length += 1
+    # if current_length > 0:
+    #     batches.append(
+    #         " ".join(
+    #             tokenizer.batch_decode(
+    #                 [tok[1:-1] for tok in tokens[i - current_word_length :]]
+    #             )
+    #         )
+    #     )
 
     # results = []
     # for split in batches:

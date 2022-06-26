@@ -1,46 +1,124 @@
 import type { NextPage } from "next";
-import { Box, Button, CircularProgress, HStack, Text } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
 import {
+  Box,
+  Button,
+  CircularProgress,
+  Heading,
+  HStack,
+  Text,
+} from "@chakra-ui/react";
+import { useState, useEffect, useRef } from "react";
+import {
+  chunk,
   ClassBlock,
+  formatTime,
+  getSpans,
   getSponsoredPhrases,
   getText,
   getTranscript,
+  hms,
   matchPhrasesToTimestamps,
+  Span,
+  SponsorInfo,
 } from "lib/api";
 import { ArrowLeft } from "react-feather";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
+import YouTube from "react-youtube";
+import Transcript from "components/Transcript";
 
 const VideoIdLoad: NextPage = () => {
   const router = useRouter();
 
   const [text, setText] = useState<string | null>("Loading Transcript");
   const [error, setError] = useState<string | null>(null);
-  const [phrases, setPhrases] = useState<ClassBlock[] | null>(null);
+  const [spans, setSpans] = useState<Span[] | null>(null);
+  const [words, setWords] = useState<SponsorInfo[] | null>(null);
+
+  const videoId = router.query.videoId as string;
 
   useEffect(() => {
     if (router.isReady) {
-      const videoId = router.query.videoId as string;
       (async () => {
         try {
           const transcript = await getTranscript(videoId as string);
           setText("Locating sponsors");
           const fetchedPhrases = await getSponsoredPhrases(getText(transcript));
           setText(null);
-          setPhrases(fetchedPhrases);
-          matchPhrasesToTimestamps(fetchedPhrases, transcript);
+          const words = matchPhrasesToTimestamps(fetchedPhrases, transcript);
+          if (!words) {
+            setError("Could not find any phrases");
+          } else {
+            setWords(words);
+            const spans = getSpans(words);
+            setSpans(spans);
+          }
         } catch (e) {
           setError(
             "Error occured. Please try again, or with a different video."
           );
+          throw e;
         }
       })();
     }
   }, [router.isReady]);
 
+  const videoRef = useRef<any | null>(null);
+  const [playProgress, setPlayProgress] = useState(0);
+
+  const timeChanged = (time: number) => {
+    setPlayProgress(time);
+    if (spans) {
+      for (const span of spans) {
+        const millis = time * 1000;
+        if (span.isSponsor && span.start <= millis && span.end > millis) {
+          videoRef.current.seekTo(span.end / 1000);
+          break;
+        }
+      }
+    }
+  };
+
   return (
     <Box p="24">
+      <Heading fontSize="7xl" mb="12">
+        reBlock
+      </Heading>
+      {router.isReady && (
+        <YouTube
+          videoId={videoId}
+          onReady={(e) => {
+            videoRef.current = e.target;
+            var iframeWindow = videoRef.current.getIframe().contentWindow;
+
+            var lastTimeUpdate = 0;
+
+            window.addEventListener("message", function (event) {
+              if (event.source === iframeWindow) {
+                var data = JSON.parse(event.data);
+                if (
+                  data.event === "infoDelivery" &&
+                  data.info &&
+                  data.info.currentTime
+                ) {
+                  var time = data.info.currentTime;
+
+                  if (time !== lastTimeUpdate) {
+                    lastTimeUpdate = time;
+                    timeChanged(time);
+                  }
+                }
+              }
+            });
+          }}
+        />
+      )}
+      <Text mt="2">
+        Time: <b>{formatTime(playProgress)}</b>
+      </Text>
+      <Text fontSize="3xl" fontWeight="bold" mt="5">
+        Transcript
+      </Text>
       <Box
         maxHeight="96"
         overflow="scroll"
@@ -49,15 +127,7 @@ const VideoIdLoad: NextPage = () => {
         overflowX="hidden"
         mb="5"
       >
-        {phrases
-          ? phrases.map(({ sponsor, phrase }, i) => {
-              return (
-                <Box key={i} as="span" color={sponsor ? "red.400" : "black"}>
-                  {phrase}
-                </Box>
-              );
-            })
-          : null}
+        {words && <Transcript time={playProgress} words={words} />}
       </Box>
       <NextLink href="/" passHref>
         <Button as="a" leftIcon={<ArrowLeft />}>
