@@ -30,52 +30,52 @@ app.add_middleware(
 )
 
 
-results = json.load(open("sample_gen2.json", "r"))
+# results = json.load(open("sample_gen2.json", "r"))
 
 
 @app.post("/detect")
 async def detect(request: Request):
-    # body = (await request.body()).decode("utf-8")
-    # tokens = tokenizer(body.split(" "))["input_ids"]
-    # current_length = 0
-    # current_word_length = 0
-    # batches = []
-    # for i, w in enumerate(tokens):
-    #     word = w[1:-1]
-    #     if (current_length + len(word)) > max_size:
-    #         batch = " ".join(
-    #             tokenizer.batch_decode(
-    #                 [
-    #                     tok[1:-1]
-    #                     for tok in tokens[max(0, i - current_word_length - 1) : i]
-    #                 ]
-    #             )
-    #         )
-    #         batches.append(batch)
-    #         current_word_length = 0
-    #         current_length = 0
-    #         continue
-    #     current_length += len(word)
-    #     current_word_length += 1
-    # if current_length > 0:
-    #     batches.append(
-    #         " ".join(
-    #             tokenizer.batch_decode(
-    #                 [tok[1:-1] for tok in tokens[i - current_word_length :]]
-    #             )
-    #         )
-    #     )
+    body = (await request.body()).decode("utf-8")
+    tokens = tokenizer(body.split(" "))["input_ids"]
+    current_length = 0
+    current_word_length = 0
+    batches = []
+    for i, w in enumerate(tokens):
+        word = w[1:-1]
+        if (current_length + len(word)) > max_size:
+            batch = " ".join(
+                tokenizer.batch_decode(
+                    [
+                        tok[1:-1]
+                        for tok in tokens[max(0, i - current_word_length - 1) : i]
+                    ]
+                )
+            )
+            batches.append(batch)
+            current_word_length = 0
+            current_length = 0
+            continue
+        current_length += len(word)
+        current_word_length += 1
+    if current_length > 0:
+        batches.append(
+            " ".join(
+                tokenizer.batch_decode(
+                    [tok[1:-1] for tok in tokens[i - current_word_length :]]
+                )
+            )
+        )
 
-    # results = []
-    # for split in batches:
-    #     values = tagger(split)
-    #     results.extend(
-    #         {
-    #             "sponsor": v["entity_group"] == "LABEL_1",
-    #             "phrase": v["word"],
-    #         }
-    #         for v in values
-    #     )
+    results = []
+    for split in batches:
+        values = tagger(split)
+        results.extend(
+            {
+                "sponsor": v["entity_group"] == "LABEL_1",
+                "phrase": v["word"],
+            }
+            for v in values
+        )
 
     # json.dump(results, open("sample_gen2.json", "w"))
     return results
@@ -139,7 +139,7 @@ sample_transcript = json.load(open("sample_transcript.json", "r"))
 
 
 @app.post("/transcript")
-# @cache(expire=600)
+@cache(expire=600)
 async def transcript(id: str):
-    return sample_transcript
+    # return sample_transcript
     return get_transcript(id, requests.Session())
