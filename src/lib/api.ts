@@ -1,5 +1,7 @@
 const url =
-  process.env.NODE_ENV == "development" ? "http://localhost:8080" : "something";
+  process.env.NODE_ENV == "development"
+    ? "http://localhost:8080"
+    : process.env.IP;
 
 export function formatTime(seconds: number): string {
   let res = hms(seconds) as number[];
