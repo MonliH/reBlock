@@ -10,8 +10,12 @@ from fastapi_cache.backends.inmemory import InMemoryBackend
 from fastapi_cache.decorator import cache
 
 
+device = 0 if torch.cuda.is_available() else -1
 tagger = pipeline(
-    "token-classification", "./checkpoint-6000", aggregation_strategy="first"
+    "token-classification",
+    "./checkpoint-6000",
+    aggregation_strategy="first",
+    device=device,
 )
 tokenizer = AutoTokenizer.from_pretrained("./checkpoint-6000")
 max_size = 512
@@ -28,6 +32,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+async def startup():
+    FastAPICache.init(InMemoryBackend(), prefix="fastapi-cache")
 
 
 # results = json.load(open("sample_gen2.json", "r"))
