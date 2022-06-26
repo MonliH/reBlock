@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Divider,
   Heading,
   HStack,
   Text,
@@ -83,6 +84,13 @@ const VideoIdLoad: NextPage = () => {
   return (
     <Box p="24" pt="14">
       <Header />
+      <Divider />
+      <br />
+      <NextLink href="/" passHref>
+        <Button as="a" leftIcon={<ArrowLeft />} mb="10">
+          Back
+        </Button>
+      </NextLink>
       {router.isReady && (
         <YouTube
           className="videoClass"
@@ -135,11 +143,6 @@ const VideoIdLoad: NextPage = () => {
           />
         )}
       </Box>
-      <NextLink href="/" passHref>
-        <Button as="a" leftIcon={<ArrowLeft />}>
-          Back
-        </Button>
-      </NextLink>
       {text && (
         <HStack mt="5">
           <CircularProgress isIndeterminate color="green.300" size="30px" />

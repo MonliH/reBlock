@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { Box, Button, Heading, Input, Text } from "@chakra-ui/react";
+import { Box, Button, Divider, Heading, Input, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { getId, getTranscript } from "../lib/api";
 import { ArrowRight } from "react-feather";
@@ -10,11 +10,16 @@ import Header from "components/Header";
 const Home: NextPage = () => {
   const [id, setId] = useState<string | null>(null);
   const [empty, setEmpty] = useState<boolean>(true);
+  const router = useRouter();
 
   return (
     <Box p="24" pt="14">
       <Header />
-      <Box mb="3">
+      <Text mt="-5px" mb="5" fontSize="lg" fontWeight="bold">
+        Block youtube sponsors using state-of-the-art natural language models!
+      </Text>
+      <Divider />
+      <Box mb="3" mt="12">
         <Text>Enter Youtube URL:</Text>
         <Input
           onChange={(e) => {
@@ -23,6 +28,13 @@ const Home: NextPage = () => {
               setEmpty(true);
             } else {
               setEmpty(false);
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              if (id) {
+                router.replace(`/video/${id}`);
+              }
             }
           }}
         ></Input>
