@@ -1,0 +1,3 @@
+fastapi-cache2
+transformers
+fastapi[all]
