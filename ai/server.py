@@ -135,7 +135,7 @@ def get_transcript(video_id, session):
     return process(obj.json())
 
 
-sample_transcript = json.load(open("sample_transcript.json", "r"))
+# sample_transcript = json.load(open("sample_transcript.json", "r"))
 
 
 @app.post("/transcript")
