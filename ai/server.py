@@ -41,7 +41,7 @@ async def detect(request: Request):
     current_word_length = 0
     batches = []
     for i, w in enumerate(tokens):
-        word = w[1:-1]
+        word = w[:-1] if i == 0 else w[1:] if i == (len(tokens) - 1) else w[1:-1]
         if (current_length + len(word)) > max_size:
             batch = " ".join(
                 tokenizer.batch_decode(
