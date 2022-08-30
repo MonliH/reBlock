@@ -6,6 +6,11 @@ import {
   Divider,
   Heading,
   HStack,
+  Slider,
+  SliderFilledTrack,
+  SliderMark,
+  SliderThumb,
+  SliderTrack,
   Text,
 } from "@chakra-ui/react";
 import { useState, useEffect, useRef } from "react";
@@ -35,6 +40,7 @@ const VideoIdLoad: NextPage = () => {
   const [text, setText] = useState<string | null>("Loading Transcript");
   const [error, setError] = useState<string | null>(null);
   const [spans, setSpans] = useState<Span[] | null>(null);
+  const spansRef = useRef<Span[] | null>(null);
   const [words, setWords] = useState<SponsorInfo[] | null>(null);
 
   const videoId = router.query.videoId as string;
@@ -45,20 +51,23 @@ const VideoIdLoad: NextPage = () => {
         try {
           const transcript = await getTranscript(videoId as string);
           setText("Locating sponsors");
+          setError(null);
           const fetchedPhrases = await getSponsoredPhrases(getText(transcript));
           setText(null);
+          setError(null);
           const words = matchPhrasesToTimestamps(fetchedPhrases, transcript);
           if (!words) {
-            setError("Could not find any phrases");
+            setError("Could not find any phrases.");
           } else {
             setWords(words);
+            setError(null);
             const spans = getSpans(words);
+            spansRef.current = spans;
             setSpans(spans);
           }
         } catch (e) {
-          setError(
-            "Error occured. Please try again, or with a different video."
-          );
+          setError("Please ensure the youtube video has a transcript.");
+          setText(null);
           throw e;
         }
       })();
@@ -69,16 +78,17 @@ const VideoIdLoad: NextPage = () => {
   const [playProgress, setPlayProgress] = useState(0);
 
   const timeChanged = (time: number) => {
-    setPlayProgress(time);
-    if (spans) {
-      for (const span of spans) {
+    if (spansRef.current) {
+      for (const span of spansRef.current) {
         const millis = time * 1000;
         if (span.isSponsor && span.start <= millis && span.end > millis) {
           videoRef.current.seekTo(span.end / 1000);
-          break;
+          setPlayProgress(span.end / 1000);
+          return;
         }
       }
     }
+    setPlayProgress(time);
   };
 
   return (
@@ -121,9 +131,61 @@ const VideoIdLoad: NextPage = () => {
           }}
         />
       )}
-      <Text mt="2">
+      <Text mt="4">
         Time: <b>{formatTime(playProgress)}</b>
       </Text>
+      {videoRef.current && (
+        <Slider
+          width="min(100%, calc(65vh * 16/9))"
+          overflow="hidden"
+          height="25px"
+          aria-label="slider-ex-1"
+          defaultValue={0}
+          min={0}
+          max={1}
+          step={0.001}
+          value={playProgress / videoRef.current.getDuration()}
+          onChange={(value) => {
+            const sec = value * videoRef.current.getDuration();
+            setPlayProgress(sec);
+            videoRef.current.seekTo(sec);
+          }}
+        >
+          {spans &&
+            spans.map((span, i) => {
+              return span.isSponsor ? (
+                <SliderMark
+                  value={span.start / 1000 / videoRef.current.getDuration()}
+                  key={i}
+                  width="100%"
+                >
+                  <Box
+                    position="absolute"
+                    width={`${Math.max(
+                      (span.end - span.start) /
+                        videoRef.current.getDuration() /
+                        10,
+                      1
+                    )}%`}
+                    height="7px"
+                    bgColor={"red.400"}
+                    borderRadius="10px"
+                    top={"10px"}
+                    left={0}
+                  ></Box>
+                </SliderMark>
+              ) : null;
+            })}
+          <SliderTrack>
+            <SliderFilledTrack />
+          </SliderTrack>
+          <SliderThumb
+            boxShadow="md"
+            borderWidth="1px"
+            borderColor="gray.200"
+          />
+        </Slider>
+      )}
       <Text fontSize="3xl" fontWeight="bold" mt="5">
         Transcript
       </Text>

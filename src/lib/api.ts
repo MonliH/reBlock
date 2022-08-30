@@ -1,5 +1,7 @@
 const url =
-  process.env.NODE_ENV == "development" ? "http://localhost:8081" : "something";
+  process.env.NODE_ENV == "development"
+    ? "http://localhost:8080"
+    : "https://e226-130-15-115-199.ngrok.io";
 
 export function formatTime(seconds: number): string {
   let res = hms(seconds) as number[];

@@ -1,3 +1,5 @@
+import "focus-visible/dist/focus-visible";
+
 import "../styles/globals.css";
 import { ChakraProvider } from "@chakra-ui/react";
 import type { AppProps } from "next/app";
