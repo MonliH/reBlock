@@ -3,7 +3,6 @@ import json
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 import torch
-from transformers import AutoTokenizer, pipeline
 from youtube_transcript_api._transcripts import TranscriptListFetcher
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend

@@ -195,4 +195,4 @@ cython_debug/
 #.idea/
 
 results_reoberta/
-checkpoint-6000/
+# checkpoint-6000/
